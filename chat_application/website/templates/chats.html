@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <!-- Centered Container -->
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+
+        <!-- Conversation List -->
+        <div style="width: 30%; padding: 20px; box-sizing: border-box; border-right: 1px solid #ccc;">
+            <h2>Active Users</h2>
+            <ul id="user-list" style="list-style-type: none; padding: 0;">
+                <!-- User list will be dynamically added here using JavaScript -->
+            </ul>
+        </div>
+
+        <!-- Chat Area -->
+        <div style="width: 70%; padding: 20px; box-sizing: border-box;">
+            <h2>Chat Room</h2>
+            <div id="chat-messages" style="overflow-y: auto; max-height: 500px;">
+                <!-- Messages will be dynamically added here using JavaScript -->
+            </div>
+            <div style="margin-top: 10px;">
+                <!-- Message Input Form -->
+                <form id="message-form">
+                    <input type="text" id="message-input" placeholder="Type your message..." style="width: 70%; padding: 8px;">
+                    <button type="button" onclick="sendMessage()" style="width: 20%; padding: 8px; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">Send</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function sendMessage() {
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value.trim();
+
+            if (message !== '') {
+                var chatMessages = document.getElementById('chat-messages');
+                var user = getCurrentUser();
+
+                // Sample format for sent messages
+                var sentMessage = '<div style="margin-bottom: 10px;">' +
+                                    '<div style="display: inline-block; background-color: white; color: black; padding: 10px; border-radius: 10px;">' +
+                                        '<span style="font-size: 12px;">' + user + ': </span>' +
+                                        message +
+                                    '</div>' +
+                                  '</div>';
+
+                chatMessages.innerHTML += sentMessage;
+                messageInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Send the message to the server
+                socket.emit('event', {'name': user, 'message': message});
+            }
+        }
+
+        function getCurrentUser() {
+            // Implement logic to get the current user's name
+            return 'User' + Math.floor(Math.random() * 1000);  // Temporary random username
+        }
+
+        // Socket.io event listeners for user joining and leaving
+        socket.on('user_join', function(username) {
+            var userList = document.getElementById('user-list');
+            var userItem = document.createElement('li');
+            userItem.innerHTML = '<a href="#">' + username + '</a>';
+            userList.appendChild(userItem);
+        });
+
+        socket.on('user_leave', function(username) {
+            var userList = document.getElementById('user-list');
+            var userItems = userList.getElementsByTagName('li');
+            for (var i = 0; i < userItems.length; i++) {
+                if (userItems[i].textContent.trim() === username) {
+                    userItems[i].remove();
+                    break;
+                }
+            }
+        });
+    </script>
+{% endblock %}
