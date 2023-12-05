@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect, url_for
 from flask_socketio import SocketIO
 from db.database import DataBase
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
+app.config['SESSION_TYPE'] = 'filesystem'
 socketio = SocketIO(app)
 db = DataBase()
 
@@ -15,10 +16,14 @@ def index():
         
         # You might want to do some validation or processing with the username
         
-        # For now, just redirect to the main chat page
-        return render_template('chats.html')
+        # Save the username in the session for later use
+        session['username'] = sender
+        
+        # Redirect to the main chat page
+        return redirect(url_for('chat'))
     else:
         return render_template('login.html')
+
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
@@ -30,6 +35,14 @@ def send_message():
         socketio.emit('message response', {'name': sender, 'message': content}, broadcast=True)
 
     return 'Message sent successfully!'
+
+@app.route('/chat')
+def chat():
+    # Check if the user is logged in
+    if 'username' not in session:
+        return redirect(url_for('index'))
+    
+    return render_template('chats.html')
 
 @socketio.on('event')
 def handle_custom_event(json):
