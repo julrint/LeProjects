@@ -29,7 +29,10 @@
 
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
     <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
         function sendMessage() {
             var messageInput = document.getElementById('message-input');
             var message = messageInput.value.trim();
@@ -55,28 +58,6 @@
             }
         }
 
-        function getCurrentUser() {
-            // Implement logic to get the current user's name
-            return 'User' + Math.floor(Math.random() * 1000);  // Temporary random username
-        }
-
-        // Socket.io event listeners for user joining and leaving
-        socket.on('user_join', function(username) {
-            var userList = document.getElementById('user-list');
-            var userItem = document.createElement('li');
-            userItem.innerHTML = '<a href="#">' + username + '</a>';
-            userList.appendChild(userItem);
-        });
-
-        socket.on('user_leave', function(username) {
-            var userList = document.getElementById('user-list');
-            var userItems = userList.getElementsByTagName('li');
-            for (var i = 0; i < userItems.length; i++) {
-                if (userItems[i].textContent.trim() === username) {
-                    userItems[i].remove();
-                    break;
-                }
-            }
-        });
+        // ... (your existing script.js content) ...
     </script>
 {% endblock %}

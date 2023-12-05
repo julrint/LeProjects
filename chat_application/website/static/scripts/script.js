@@ -30,8 +30,8 @@ function sendMessage() {
         // Emit the message to the server
         socket.emit('event', { message: message });
 
-        // Add the sent message to the chat window
-        addMessageToChat({ message: message }, true);
+        // Add the sent message to the chat window with the current user as the sender
+        addMessageToChat({ name: getCurrentUser(), message: message }, true);
 
         // Clear the message input
         messageInput.value = '';
