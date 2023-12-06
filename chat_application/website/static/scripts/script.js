@@ -8,9 +8,7 @@ function addMessageToChat(msg, isSelf) {
     // Sample format for received and sent messages
     var message = '<div style="margin-bottom: 10px;">' +
                         '<div style="display: inline-block; background-color: ' + (isSelf ? 'white' : '#F0F8FF') + '; color: black; padding: 10px; border-radius: 10px;">' +
-                            msg.message +
-                            '<br>' +
-                            '<span style="font-size: 10px;">' + (isSelf ? 'You' : msg.name) + '</span>' +
+                            msg +
                         '</div>' +
                     '</div>';
 
@@ -27,11 +25,11 @@ function sendMessage() {
     var message = messageInput.value.trim();
 
     if (message !== '') {
+        // Add the sent message to the chat window
+        addMessageToChat(message, true);
+
         // Emit the message to the server
         socket.emit('event', { message: message });
-
-        // Add the sent message to the chat window with the current user as the sender
-        addMessageToChat({ name: getCurrentUser(), message: message }, true);
 
         // Clear the message input
         messageInput.value = '';
@@ -43,6 +41,3 @@ socket.on('message response', function (msg) {
     // Add the received message to the chat window
     addMessageToChat(msg, false);
 });
-
-// Additional functions or event listeners can be added as needed
-// Remember to adjust the HTML accordingly and include this script in your HTML

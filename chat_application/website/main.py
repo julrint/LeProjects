@@ -53,7 +53,7 @@ def handle_custom_event(json):
 
         db.save_message(sender, content)
 
-    socketio.emit('message response', json)
+    socketio.emit('message response', {'name': sender, 'message': content}, broadcast=True)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
